@@ -1,0 +1,3 @@
+[submodule "DeDaoData"]
+	path = DeDaoData
+	url = https://jimmystone@bitbucket.org/jimmystone/dedaodata.git
