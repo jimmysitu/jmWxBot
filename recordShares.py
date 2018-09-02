@@ -34,16 +34,17 @@ if __name__ == '__main__':
                     'LongUrl': msg.url,
                     'ShortUrl': urllib.request.urlopen("http://tinyurl.com/api-create.php?url=%s" % msg.url).read().decode('utf-8')
                 }
+                print("Updated duplicate record")
                 return Record[i]['ShortUrl']
-            else:
-                Record.append(
-                    {
-                        'Text': msg.text,
-                        'LongUrl': msg.url,
-                        'ShortUrl': urllib.request.urlopen("http://tinyurl.com/api-create.php?url=%s" % msg.url).read().decode('utf-8')
-                    }
-                )
-                return Record[-1]['ShortUrl']
+
+        Record.append(
+            {
+                'Text': msg.text,
+                'LongUrl': msg.url,
+                'ShortUrl': urllib.request.urlopen("http://tinyurl.com/api-create.php?url=%s" % msg.url).read().decode('utf-8')
+            }
+        )
+        return Record[-1]['ShortUrl']
 
     @bot.register(chats=[bot.self], msg_types=wxpy.TEXT, except_self=False)
     def regiter_text(msg):
@@ -64,8 +65,6 @@ if __name__ == '__main__':
                 print('Reloaded records')
             else:
                 print('No input file, cannot reload')
-
-
 
     wxpy.embed()
     #bot.join()
