@@ -16,52 +16,52 @@ if __name__ == '__main__':
 
     (opts, args) = parser.parse_args()
 
-    Record = []
+    Records = []
     if opts.inFile:
         with open(opts.inFile, 'r', encoding='utf-8') as jsonFile:
-            Record = json.load(jsonFile)
+            Records = json.load(jsonFile)
 
     bot = wxpy.Bot(console_qr=True)
 
     @bot.register(chats=[bot.self], msg_types=wxpy.SHARING, except_self=False)
     def register_sharing(msg):
-        global Record
+        global Records
         print(msg)
-        for i in range(0, len(Record)):
-            if Record[i]['Text'] == msg.text:
-                Record[i] = {
+        for i in range(0, len(Records)):
+            if Records[i]['Text'] == msg.text:
+                Records[i] = {
                     'Text': msg.text,
                     'LongUrl': msg.url,
                     'ShortUrl': urllib.request.urlopen("http://tinyurl.com/api-create.php?url=%s" % msg.url).read().decode('utf-8')
                 }
                 print("Updated duplicate record")
-                return Record[i]['ShortUrl']
+                return Records[i]['ShortUrl']
 
-        Record.append(
+        Records.append(
             {
                 'Text': msg.text,
                 'LongUrl': msg.url,
                 'ShortUrl': urllib.request.urlopen("http://tinyurl.com/api-create.php?url=%s" % msg.url).read().decode('utf-8')
             }
         )
-        return Record[-1]['ShortUrl']
+        return Records[-1]['ShortUrl']
 
     @bot.register(chats=[bot.self], msg_types=wxpy.TEXT, except_self=False)
     def regiter_text(msg):
-        global Record
+        global Records
         if msg.text == 'end':
             with open(opts.outFile, 'w', encoding='utf-8') as jsonFile:
-                json.dump(Record, jsonFile, ensure_ascii=False, indent=4, sort_keys=True)
+                json.dump(Records, jsonFile, ensure_ascii=False, indent=4, sort_keys=True)
             jsonFile.close()
             bot.logout()
         elif msg.text == 'save':
             with open(opts.outFile, 'w', encoding='utf-8') as jsonFile:
-                json.dump(Record, jsonFile, ensure_ascii=False, indent=4, sort_keys=True)
+                json.dump(Records, jsonFile, ensure_ascii=False, indent=4, sort_keys=True)
                 print('Saved records')
         elif msg.text == 'reload':
             if opts.inFile:
                 with open(opts.inFile, 'r', encoding='utf-8') as jsonFile:
-                    Record = json.load(jsonFile)
+                    Records = json.load(jsonFile)
                 print('Reloaded records')
             else:
                 print('No input file, cannot reload')
