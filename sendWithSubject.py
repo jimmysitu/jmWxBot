@@ -11,7 +11,7 @@ if __name__ == '__main__':
     parser.add_option('-i', '--input', dest="inFile",
                       help="Intput file in json format")
     parser.add_option('-s', '--subject', dest="subject",
-                      help="Output file in json format")
+                      help="Selected subject")
 
     (opts, args) = parser.parse_args()
 
