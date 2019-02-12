@@ -2,6 +2,7 @@
 
 import requests
 import json
+import time
 
 from optparse import OptionParser
 
@@ -17,15 +18,8 @@ if __name__ == '__main__':
 
     (opts, args) = parser.parse_args()
 
-    host = 'https://dwz.cn'
-    path = '/admin/v2/create'
-    url = host + path
-    method = 'POST'
-    content_type = 'application/json'
+    url = 'http://api.suolink.cn/api.php'
 
-    token = opts.token
-
-    headers = {'Content-Type':content_type, 'Token':token}
 
     Records = []
     if opts.inFile:
@@ -33,11 +27,14 @@ if __name__ == '__main__':
             Records = json.load(jsonFile)
 
     for r in Records:
-        bodys = {'url':r['LongUrl']}
-        response = requests.post(url=url, data=json.dumps(bodys), headers=headers)
+        payloads = {'url':"urlencode('%s')" % r['LongUrl'], 'format':'json', 'key':opts.token}
+        response = requests.get(url=url, params=payloads)
         rsp = json.loads(response.text)
-        if rsp['Code'] == 0:
-            r['ShortUrl'] = rsp['ShortUrl']
+        if rsp['err'] == "":
+            print(response.text)
+            print("Updated short url from %s to %s" %(r['ShortUrl'], rsp['url']))
+            r['ShortUrl'] = rsp['url']
+            time.sleep(2)
         else:
             print(response.text)
             exit(1)
